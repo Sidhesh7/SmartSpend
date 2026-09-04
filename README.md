@@ -264,7 +264,7 @@ This boots:
 
 ---
 
-## 🏆 Resume Summary
+## 🏆Summary
 
 **SmartSpend — AI Financial Fraud Detection & Risk Analytics Platform**
 > *Developed an end-to-end financial fraud detection platform using React, Node.js, PostgreSQL, and Python, featuring a high-throughput Random Forest ensemble pipeline for real-time transaction classification and explainable 0–100 risk scoring. Engineered forensic ledger discrepancy algorithms, multi-signal feature attribution, triage workflows, and containerized the architecture with Docker Compose.*
