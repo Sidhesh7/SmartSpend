@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  name      String
+  password  String
+  role      String     @default("ANALYST") // "ANALYST" or "ADMIN"
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  AuditLog  AuditLog[]
+}
+
+model Transaction {
+  id               String       @id @default(uuid())
+  transactionId    String       @unique // e.g. TXN-1001
+  type             String       // TRANSFER, CASH_OUT, PAYMENT, CASH_IN, DEBIT
+  amount           Float
+  sender           String       // nameOrig
+  receiver         String       // nameDest
+  oldBalanceOrig   Float        @default(0.0)
+  newBalanceOrig   Float        @default(0.0)
+  oldBalanceDest   Float        @default(0.0)
+  newBalanceDest   Float        @default(0.0)
+  fraudProbability Float        @default(0.0)
+  riskScore        Int          @default(0) // 0-100
+  riskLevel        String       @default("LOW") // LOW, MEDIUM, HIGH
+  status           String       @default("APPROVED") // APPROVED, UNDER_REVIEW, FLAGGED, BLOCKED
+  isFraud          Boolean      @default(false)
+  step             Int          @default(1)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  riskFactors      RiskFactor[]
+  auditLogs        AuditLog[]
+}
+
+model RiskFactor {
+  id            String      @id @default(uuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  factor        String
+  severity      String      // LOW, MEDIUM, HIGH, CRITICAL
+  code          String?
+  createdAt     DateTime    @default(now())
+}
+
+model AuditLog {
+  id            String       @id @default(uuid())
+  transactionId String
+  transaction   Transaction  @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  userId        String?
+  user          User?        @relation(fields: [userId], references: [id])
+  action        String       // STATUS_CHANGED, NOTE_ADDED, MANUAL_OVERRIDE
+  notes         String?
+  createdAt     DateTime     @default(now())
+}
